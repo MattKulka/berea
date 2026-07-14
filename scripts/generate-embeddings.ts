@@ -1,6 +1,6 @@
 import { supabaseAdmin } from "./lib/supabase-admin.ts";
 
-const VOYAGE_MODEL = "voyage-3";
+const VOYAGE_MODEL = "voyage-3-lite";
 const VOYAGE_API_KEY = process.env.VOYAGE_API_KEY;
 const EMBED_BATCH_SIZE = 96;
 const FETCH_PAGE_SIZE = 1000;
