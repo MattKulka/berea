@@ -259,6 +259,48 @@
   margin-bottom: 32px;
 }
 
+.deck-list-section {
+  margin-top: 40px;
+  text-align: left;
+}
+
+.deck-list-section h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+}
+
+.deck-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.deck-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.deck-item-ref {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.deck-item-due {
+  color: var(--ink-soft);
+  font-size: 13px;
+  margin-right: auto;
+}
+
 .flashcard {
   border: 1px solid var(--border);
   border-radius: 16px;

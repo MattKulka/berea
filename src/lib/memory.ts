@@ -77,6 +77,15 @@ export async function listDueCards(): Promise<MemoryCard[]> {
   return resolveCards(data);
 }
 
+export async function listDeck(): Promise<MemoryCard[]> {
+  const { data, error } = await supabase
+    .from("memory_cards")
+    .select("id, verse_id, ease_factor, interval_days, repetitions, due_at")
+    .order("due_at", { ascending: true });
+  if (error) throw error;
+  return resolveCards(data);
+}
+
 export async function deckStats(): Promise<{ total: number; due: number }> {
   const { count: total } = await supabase.from("memory_cards").select("*", { count: "exact", head: true });
   const { count: due } = await supabase

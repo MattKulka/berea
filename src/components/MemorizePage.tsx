@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../lib/auth";
-import { deckStats, listDueCards, reviewCard, type MemoryCard } from "../lib/memory";
+import { deckStats, listDeck, listDueCards, removeFromDeck, reviewCard, type MemoryCard } from "../lib/memory";
 
 const GRADES: { label: string; quality: number; className: string }[] = [
   { label: "Again", quality: 1, className: "grade-again" },
@@ -10,16 +10,31 @@ const GRADES: { label: string; quality: number; className: string }[] = [
   { label: "Easy", quality: 5, className: "grade-easy" },
 ];
 
+function formatDue(dueAt: string): string {
+  const due = new Date(dueAt);
+  const now = new Date();
+  const days = Math.round((due.getTime() - now.getTime()) / 86_400_000);
+  if (days <= 0) return "due today";
+  if (days === 1) return "due tomorrow";
+  return `due in ${days} days`;
+}
+
 export function MemorizePage() {
   const { user, loading } = useAuth();
   const [queue, setQueue] = useState<MemoryCard[] | null>(null);
+  const [deck, setDeck] = useState<MemoryCard[] | null>(null);
   const [stats, setStats] = useState<{ total: number; due: number } | null>(null);
   const [revealed, setRevealed] = useState(false);
 
+  function refreshAll() {
+    listDueCards().then(setQueue);
+    listDeck().then(setDeck);
+    deckStats().then(setStats);
+  }
+
   useEffect(() => {
     if (!user) return;
-    listDueCards().then(setQueue);
-    deckStats().then(setStats);
+    refreshAll();
   }, [user]);
 
   if (loading) return null;
@@ -31,6 +46,15 @@ export function MemorizePage() {
     await reviewCard(current, quality);
     setQueue((prev) => prev!.slice(1));
     setRevealed(false);
+    listDeck().then(setDeck);
+    deckStats().then(setStats);
+  }
+
+  async function handleRemove(cardId: number) {
+    await removeFromDeck(cardId);
+    setDeck((prev) => prev!.filter((c) => c.id !== cardId));
+    setQueue((prev) => prev?.filter((c) => c.id !== cardId) ?? prev);
+    deckStats().then(setStats);
   }
 
   return (
@@ -81,6 +105,25 @@ export function MemorizePage() {
               </div>
             )}
           </div>
+        )}
+
+        {user && deck !== null && deck.length > 0 && (
+          <section className="deck-list-section">
+            <h2>Your Deck</h2>
+            <ul className="deck-list">
+              {deck.map((card) => (
+                <li key={card.id} className="deck-item">
+                  <span className="deck-item-ref">
+                    {card.verse.book} {card.verse.chapter}:{card.verse.verse}
+                  </span>
+                  <span className="deck-item-due">{formatDue(card.dueAt)}</span>
+                  <button className="note-link-btn" onClick={() => handleRemove(card.id)}>
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
       </main>
     </div>
