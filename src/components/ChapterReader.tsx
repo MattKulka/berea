@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../lib/auth";
+import { listNoteVerseIdsInChapter } from "../lib/notes";
 import { getChapter } from "../lib/queries";
 import type { Verse } from "../lib/types";
 
@@ -10,18 +12,28 @@ type Props = {
 };
 
 export function ChapterReader({ book, chapter, selectedVerse, onSelectVerse }: Props) {
+  const { user } = useAuth();
   const [verses, setVerses] = useState<Verse[] | null>(null);
+  const [notedIds, setNotedIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
     setVerses(null);
     getChapter(book, chapter).then((data) => {
-      if (!cancelled) setVerses(data);
+      if (cancelled) return;
+      setVerses(data);
+      if (user) {
+        listNoteVerseIdsInChapter(data.map((v) => v.id)).then((ids) => {
+          if (!cancelled) setNotedIds(ids);
+        });
+      } else {
+        setNotedIds(new Set());
+      }
     });
     return () => {
       cancelled = true;
     };
-  }, [book, chapter]);
+  }, [book, chapter, user]);
 
   return (
     <article className="chapter-reader">
@@ -38,7 +50,8 @@ export function ChapterReader({ book, chapter, selectedVerse, onSelectVerse }: P
               onClick={() => onSelectVerse(v.verse)}
             >
               <sup className="verse-num">{v.verse}</sup>
-              {v.text}{" "}
+              {v.text}
+              {notedIds.has(v.id) && <span className="note-dot" title="You have a note here" />}{" "}
             </span>
           ) : null,
         )}

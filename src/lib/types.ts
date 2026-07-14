@@ -15,3 +15,14 @@ export type CrossReference = {
   toStart: Verse;
   toEnd: Verse;
 };
+
+export type Note = {
+  id: number;
+  userId: string;
+  verseStart: Verse;
+  verseEnd: Verse;
+  body: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+};

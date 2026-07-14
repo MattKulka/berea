@@ -5,10 +5,13 @@ import { AuthMenu } from "./components/AuthMenu";
 import { BookChapterNav } from "./components/BookChapterNav";
 import { ChapterReader } from "./components/ChapterReader";
 import { CrossReferencePanel } from "./components/CrossReferencePanel";
+import { NotesPage } from "./components/NotesPage";
+import { useAuth } from "./lib/auth";
 import { getChapter } from "./lib/queries";
 import type { Verse } from "./lib/types";
 
 function ReaderPage() {
+  const { user } = useAuth();
   const { book = "John", chapter = "1" } = useParams();
   const chapterNum = Number(chapter);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -47,6 +50,11 @@ function ReaderPage() {
           Berea
         </Link>
         <BookChapterNav book={book} chapter={chapterNum} onNavigate={(b, c) => goTo(b, c)} />
+        {user && (
+          <Link to="/notes" className="auth-link-btn">
+            My Notes
+          </Link>
+        )}
         <AuthMenu />
       </header>
       <main className="app-main">
@@ -62,6 +70,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/read/John/1" replace />} />
       <Route path="/read/:book/:chapter" element={<ReaderPage />} />
+      <Route path="/notes" element={<NotesPage />} />
     </Routes>
   );
 }
