@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCrossReferences, getSemanticMatches } from "../lib/queries";
+import { StudyQA } from "./StudyQA";
 import type { CrossReference, SemanticMatch, Verse } from "../lib/types";
 
 type Props = {
@@ -33,6 +34,8 @@ export function CrossReferencePanel({ verse, onNavigate }: Props) {
         </div>
         <p className="selected-verse-text">{verse.text}</p>
       </div>
+
+      <StudyQA verse={verse} />
 
       <section className="ref-section">
         <h2>Cross References</h2>
