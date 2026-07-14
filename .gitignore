@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Raw downloaded Bible/cross-reference source data (re-fetched by scripts/ingest-bible.ts)
+scripts/data/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
