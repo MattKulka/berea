@@ -363,9 +363,81 @@
 }
 
 .radial-graph-wrap {
+  position: relative;
   margin-bottom: 24px;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--border);
+}
+
+.radial-expand-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radial-expand-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.radial-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 18, 15, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 32px;
+}
+
+.radial-modal-content {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 40px;
+  width: min(720px, 100%);
+  max-height: calc(100vh - 64px);
+  overflow: auto;
+}
+
+.radial-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.radial-modal-close:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+.radial-modal-content .radial-graph-wrap {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .radial-graph {

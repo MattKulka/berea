@@ -3,6 +3,7 @@ import { getCrossReferences, getSemanticMatches } from "../lib/queries";
 import { MemorizeToggle } from "./MemorizeToggle";
 import { NotesSection } from "./NotesSection";
 import { RadialGraph } from "./RadialGraph";
+import { RadialGraphModal } from "./RadialGraphModal";
 import { StudyQA } from "./StudyQA";
 import type { CrossReference, SemanticMatch, Verse } from "../lib/types";
 
@@ -21,6 +22,7 @@ function refLabel(ref: CrossReference): string {
 export function CrossReferencePanel({ verse, onNavigate }: Props) {
   const [crossRefs, setCrossRefs] = useState<CrossReference[] | null>(null);
   const [matches, setMatches] = useState<SemanticMatch[] | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     setCrossRefs(null);
@@ -28,6 +30,11 @@ export function CrossReferencePanel({ verse, onNavigate }: Props) {
     getCrossReferences(verse.id).then(setCrossRefs);
     getSemanticMatches(verse.id).then(setMatches);
   }, [verse.id]);
+
+  function handleNavigate(book: string, chapter: number, v: number) {
+    setExpanded(false);
+    onNavigate(book, chapter, v);
+  }
 
   return (
     <aside className="cross-ref-panel">
@@ -40,7 +47,17 @@ export function CrossReferencePanel({ verse, onNavigate }: Props) {
       </div>
 
       {crossRefs && matches && (crossRefs.length > 0 || matches.length > 0) && (
-        <RadialGraph verse={verse} crossRefs={crossRefs} matches={matches} onNavigate={onNavigate} />
+        <RadialGraph verse={verse} crossRefs={crossRefs} matches={matches} onNavigate={onNavigate} onExpand={() => setExpanded(true)} />
+      )}
+
+      {expanded && crossRefs && matches && (
+        <RadialGraphModal
+          verse={verse}
+          crossRefs={crossRefs}
+          matches={matches}
+          onNavigate={handleNavigate}
+          onClose={() => setExpanded(false)}
+        />
       )}
 
       <NotesSection verse={verse} />

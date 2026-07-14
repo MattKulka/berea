@@ -11,11 +11,12 @@ type Node = {
   normScore: number;
 };
 
-const SIZE = 440;
-const CENTER = SIZE / 2;
-const MIN_RADIUS = 70;
-const MAX_RADIUS = 190;
-const MAX_PER_GROUP = 6;
+type Variant = "compact" | "expanded";
+
+const GEOMETRY: Record<Variant, { size: number; minRadius: number; maxRadius: number; fontSize: number; centerR: number; maxPerGroup: number }> = {
+  compact: { size: 440, minRadius: 70, maxRadius: 190, fontSize: 10, centerR: 34, maxPerGroup: 6 },
+  expanded: { size: 720, minRadius: 130, maxRadius: 320, fontSize: 14, centerR: 54, maxPerGroup: 8 },
+};
 
 function normalize(values: number[]): number[] {
   const min = Math.min(...values);
@@ -24,9 +25,9 @@ function normalize(values: number[]): number[] {
   return values.map((v) => (v - min) / (max - min));
 }
 
-function buildNodes(crossRefs: CrossReference[], matches: SemanticMatch[]): Node[] {
-  const crossTop = crossRefs.slice(0, MAX_PER_GROUP);
-  const semanticTop = matches.slice(0, MAX_PER_GROUP);
+function buildNodes(crossRefs: CrossReference[], matches: SemanticMatch[], maxPerGroup: number): Node[] {
+  const crossTop = crossRefs.slice(0, maxPerGroup);
+  const semanticTop = matches.slice(0, maxPerGroup);
 
   const crossScores = normalize(crossTop.map((r) => r.votes));
   const semanticScores = normalize(semanticTop.map((m) => m.similarity));
@@ -59,77 +60,106 @@ export function RadialGraph({
   crossRefs,
   matches,
   onNavigate,
+  variant = "compact",
+  onExpand,
 }: {
   verse: Verse;
   crossRefs: CrossReference[];
   matches: SemanticMatch[];
   onNavigate: (book: string, chapter: number, verse: number) => void;
+  variant?: Variant;
+  onExpand?: () => void;
 }) {
-  const nodes = buildNodes(crossRefs, matches);
+  const { size, minRadius, maxRadius, fontSize, centerR, maxPerGroup } = GEOMETRY[variant];
+  const center = size / 2;
+  const nodes = buildNodes(crossRefs, matches, maxPerGroup);
   const n = nodes.length;
 
   const positioned = nodes.map((node, i) => {
     const angle = (2 * Math.PI * i) / Math.max(n, 1) - Math.PI / 2;
-    const radius = MAX_RADIUS - node.normScore * (MAX_RADIUS - MIN_RADIUS);
-    const x = CENTER + radius * Math.cos(angle);
-    const y = CENTER + radius * Math.sin(angle);
+    const radius = maxRadius - node.normScore * (maxRadius - minRadius);
+    const x = center + radius * Math.cos(angle);
+    const y = center + radius * Math.sin(angle);
     const isRightHalf = Math.cos(angle) >= 0;
     return { ...node, x, y, isRightHalf };
   });
 
-  const centerKey = `${verse.book}-${verse.chapter}-${verse.verse}`;
+  const centerKey = `${verse.book}-${verse.chapter}-${verse.verse}-${variant}`;
 
   return (
-    <div className="radial-graph-wrap">
-      <svg key={centerKey} viewBox={`0 0 ${SIZE} ${SIZE}`} className="radial-graph">
+    <div className={`radial-graph-wrap radial-graph-wrap--${variant}`}>
+      {onExpand && (
+        <button className="radial-expand-btn" onClick={onExpand} aria-label="Expand graph" title="Expand graph">
+          ⤢
+        </button>
+      )}
+      <svg key={centerKey} viewBox={`0 0 ${size} ${size}`} className="radial-graph">
         {positioned.map((node) => (
           <motion.line
             key={`line-${node.key}`}
-            x1={CENTER}
-            y1={CENTER}
+            x1={center}
+            y1={center}
             x2={node.x}
             y2={node.y}
             stroke={node.kind === "cross" ? "var(--accent)" : "var(--ink-soft)"}
-            strokeWidth={1 + node.normScore}
-            strokeDasharray={node.kind === "semantic" ? "4 4" : undefined}
+            strokeWidth={1 + node.normScore * 1.5}
+            strokeDasharray={node.kind === "semantic" ? "5 5" : undefined}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.35 + node.normScore * 0.35 }}
+            animate={{ opacity: 0.3 + node.normScore * 0.4 }}
             transition={{ duration: 0.4 }}
           />
         ))}
 
-        {positioned.map((node, i) => (
-          <g key={node.key} className="radial-node" onClick={() => onNavigate(node.book, node.chapter, node.verse)}>
-            <motion.circle
-              cx={node.x}
-              cy={node.y}
-              fill={node.kind === "cross" ? "var(--accent)" : "var(--bg-elevated)"}
-              stroke="var(--accent)"
-              strokeWidth={node.kind === "semantic" ? 1.5 : 0}
-              initial={{ r: 0, opacity: 0 }}
-              animate={{ r: 5 + node.normScore * 7, opacity: 1 }}
-              transition={{ duration: 0.35, delay: 0.08 + i * 0.03 }}
-            />
-            <motion.text
-              x={node.x + (node.isRightHalf ? 1 : -1) * (10 + node.normScore * 7)}
-              y={node.y}
-              textAnchor={node.isRightHalf ? "start" : "end"}
-              dominantBaseline="middle"
-              className="radial-label"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.35, delay: 0.15 + i * 0.03 }}
-            >
-              {node.label}
-            </motion.text>
-          </g>
-        ))}
+        {positioned.map((node, i) => {
+          const nodeR = (variant === "expanded" ? 6 : 5) + node.normScore * (variant === "expanded" ? 10 : 7);
+          const labelOffset = nodeR + fontSize * 0.6;
+          const labelWidth = node.label.length * fontSize * 0.56 + fontSize * 0.8;
+          const labelX = node.x + (node.isRightHalf ? 1 : -1) * labelOffset;
+          return (
+            <g key={node.key} className="radial-node" onClick={() => onNavigate(node.book, node.chapter, node.verse)}>
+              <motion.circle
+                cx={node.x}
+                cy={node.y}
+                fill={node.kind === "cross" ? "var(--accent)" : "var(--bg-elevated)"}
+                stroke="var(--accent)"
+                strokeWidth={node.kind === "semantic" ? 1.5 : 0}
+                initial={{ r: 0, opacity: 0 }}
+                animate={{ r: nodeR, opacity: 1 }}
+                transition={{ duration: 0.35, delay: 0.08 + i * 0.03 }}
+              />
+              <motion.rect
+                x={node.isRightHalf ? labelX - fontSize * 0.4 : labelX - labelWidth + fontSize * 0.4}
+                y={node.y - fontSize * 0.75}
+                width={labelWidth}
+                height={fontSize * 1.5}
+                rx={fontSize * 0.4}
+                fill="var(--bg-elevated)"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.85 }}
+                transition={{ duration: 0.35, delay: 0.12 + i * 0.03 }}
+              />
+              <motion.text
+                x={labelX}
+                y={node.y}
+                textAnchor={node.isRightHalf ? "start" : "end"}
+                dominantBaseline="middle"
+                className="radial-label"
+                style={{ fontSize }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.35, delay: 0.15 + i * 0.03 }}
+              >
+                {node.label}
+              </motion.text>
+            </g>
+          );
+        })}
 
-        <circle cx={CENTER} cy={CENTER} r={34} fill="var(--accent)" />
-        <text x={CENTER} y={CENTER - 4} textAnchor="middle" className="radial-center-label">
+        <circle cx={center} cy={center} r={centerR} fill="var(--accent)" />
+        <text x={center} y={center - centerR * 0.18} textAnchor="middle" className="radial-center-label" style={{ fontSize: fontSize * 1.3 }}>
           {verse.book} {verse.chapter}
         </text>
-        <text x={CENTER} y={CENTER + 12} textAnchor="middle" className="radial-center-label">
+        <text x={center} y={center + centerR * 0.4} textAnchor="middle" className="radial-center-label" style={{ fontSize: fontSize * 1.3 }}>
           :{verse.verse}
         </text>
       </svg>
