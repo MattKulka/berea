@@ -60,6 +60,75 @@
   background: var(--highlight);
 }
 
+.auth-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.auth-email {
+  color: var(--ink-soft);
+}
+
+.auth-link-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.auth-link-btn:hover {
+  background: var(--highlight);
+}
+
+.auth-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.auth-form input {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--ink);
+  width: 180px;
+}
+
+.auth-form button {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg-elevated);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.auth-form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.auth-error {
+  color: #c0392b;
+  font-size: 12px;
+}
+
+.auth-sent {
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
 .app-main {
   flex: 1;
   display: grid;

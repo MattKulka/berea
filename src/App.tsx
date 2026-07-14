@@ -1,6 +1,7 @@
 import { Link, Navigate, Route, Routes, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./App.css";
+import { AuthMenu } from "./components/AuthMenu";
 import { BookChapterNav } from "./components/BookChapterNav";
 import { ChapterReader } from "./components/ChapterReader";
 import { CrossReferencePanel } from "./components/CrossReferencePanel";
@@ -46,6 +47,7 @@ function ReaderPage() {
           Berea
         </Link>
         <BookChapterNav book={book} chapter={chapterNum} onNavigate={(b, c) => goTo(b, c)} />
+        <AuthMenu />
       </header>
       <main className="app-main">
         <ChapterReader book={book} chapter={chapterNum} selectedVerse={selectedVerse?.verse ?? null} onSelectVerse={selectVerse} />
