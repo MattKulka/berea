@@ -233,6 +233,77 @@
   margin-bottom: 28px;
 }
 
+.radial-graph-wrap {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.radial-graph {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  overflow: visible;
+}
+
+.radial-node {
+  cursor: pointer;
+}
+
+.radial-node:hover circle {
+  filter: brightness(1.15);
+}
+
+.radial-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  fill: var(--ink-soft);
+  pointer-events: none;
+}
+
+.radial-node:hover .radial-label {
+  fill: var(--ink);
+}
+
+.radial-center-label {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--bg-elevated);
+  pointer-events: none;
+}
+
+.radial-legend {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.radial-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot-cross {
+  background: var(--accent);
+}
+
+.legend-dot-semantic {
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--accent);
+}
+
 .note-list {
   list-style: none;
   margin: 0 0 12px;

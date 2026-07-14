@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCrossReferences, getSemanticMatches } from "../lib/queries";
 import { NotesSection } from "./NotesSection";
+import { RadialGraph } from "./RadialGraph";
 import { StudyQA } from "./StudyQA";
 import type { CrossReference, SemanticMatch, Verse } from "../lib/types";
 
@@ -35,6 +36,10 @@ export function CrossReferencePanel({ verse, onNavigate }: Props) {
         </div>
         <p className="selected-verse-text">{verse.text}</p>
       </div>
+
+      {crossRefs && matches && (crossRefs.length > 0 || matches.length > 0) && (
+        <RadialGraph verse={verse} crossRefs={crossRefs} matches={matches} onNavigate={onNavigate} />
+      )}
 
       <NotesSection verse={verse} />
 
