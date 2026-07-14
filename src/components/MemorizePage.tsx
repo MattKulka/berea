@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { AppHeader } from "./AppHeader";
 import { useAuth } from "../lib/auth";
 import { deckStats, listDeck, listDueCards, removeFromDeck, reviewCard, type MemoryCard } from "../lib/memory";
 
@@ -59,14 +60,11 @@ export function MemorizePage() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <Link to="/read/John/1" className="brand">
-          Berea
-        </Link>
+      <AppHeader>
         <Link to="/read/John/1" className="auth-link-btn" style={{ marginLeft: "auto" }}>
           Back to reading
         </Link>
-      </header>
+      </AppHeader>
       <main className="memorize-page">
         <h1 className="chapter-heading">Memorize</h1>
         {!user && <p className="empty">Sign in to build a memorization deck.</p>}

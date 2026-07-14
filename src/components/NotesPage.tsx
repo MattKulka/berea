@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AppHeader } from "./AppHeader";
 import { useAuth } from "../lib/auth";
 import { listAllNotes } from "../lib/notes";
 import type { Note } from "../lib/types";
@@ -26,14 +27,11 @@ export function NotesPage() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <Link to="/read/John/1" className="brand">
-          Berea
-        </Link>
+      <AppHeader>
         <Link to="/read/John/1" className="auth-link-btn" style={{ marginLeft: "auto" }}>
           Back to reading
         </Link>
-      </header>
+      </AppHeader>
       <main className="notes-page">
         <h1 className="chapter-heading">My Notes</h1>
         {!user && <p className="empty">Sign in to see your notes.</p>}

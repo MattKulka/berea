@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { getCrossReferences, getSemanticMatches } from "../lib/queries";
 import { MemorizeToggle } from "./MemorizeToggle";
 import { NotesSection } from "./NotesSection";
@@ -37,7 +38,12 @@ export function CrossReferencePanel({ verse, onNavigate }: Props) {
   }
 
   return (
-    <aside className="cross-ref-panel">
+    <motion.aside
+      className="cross-ref-panel"
+      initial={{ opacity: 0, x: 24 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+    >
       <div className="selected-verse-card">
         <div className="selected-verse-ref">
           {verse.book} {verse.chapter}:{verse.verse}
@@ -98,6 +104,6 @@ export function CrossReferencePanel({ verse, onNavigate }: Props) {
           ))}
         </ul>
       </section>
-    </aside>
+    </motion.aside>
   );
 }

@@ -52,10 +52,14 @@ body {
 }
 
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(ellipse 1200px 800px at 15% -10%, var(--highlight) 0%, transparent 60%),
+    radial-gradient(ellipse 1000px 700px at 100% 10%, var(--highlight) 0%, transparent 55%),
+    var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 #root {
@@ -64,6 +68,12 @@ body {
 
 button {
   font-family: inherit;
+}
+
+button,
+select,
+a {
+  transition: all 0.15s ease;
 }
 
 a {

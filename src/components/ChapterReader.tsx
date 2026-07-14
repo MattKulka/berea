@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useAuth } from "../lib/auth";
 import { listNoteVerseIdsInChapter } from "../lib/notes";
 import { getChapter } from "../lib/queries";
@@ -41,7 +42,13 @@ export function ChapterReader({ book, chapter, selectedVerse, onSelectVerse }: P
         {book} {chapter}
       </h1>
       {!verses && <p className="loading">Loading…</p>}
-      <p className="chapter-body">
+      <motion.p
+        key={`${book}-${chapter}`}
+        className="chapter-body"
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      >
         {verses?.map((v) =>
           v.text ? (
             <span
@@ -55,7 +62,7 @@ export function ChapterReader({ book, chapter, selectedVerse, onSelectVerse }: P
             </span>
           ) : null,
         )}
-      </p>
+      </motion.p>
     </article>
   );
 }

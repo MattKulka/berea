@@ -1,7 +1,7 @@
 import { Link, Navigate, Route, Routes, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./App.css";
-import { AuthMenu } from "./components/AuthMenu";
+import { AppHeader } from "./components/AppHeader";
 import { BookChapterNav } from "./components/BookChapterNav";
 import { ChapterReader } from "./components/ChapterReader";
 import { CrossReferencePanel } from "./components/CrossReferencePanel";
@@ -46,10 +46,7 @@ function ReaderPage() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <Link to="/read/John/1" className="brand">
-          Berea
-        </Link>
+      <AppHeader>
         <BookChapterNav book={book} chapter={chapterNum} onNavigate={(b, c) => goTo(b, c)} />
         {user && (
           <>
@@ -61,8 +58,7 @@ function ReaderPage() {
             </Link>
           </>
         )}
-        <AuthMenu />
-      </header>
+      </AppHeader>
       <main className="app-main">
         <ChapterReader book={book} chapter={chapterNum} selectedVerse={selectedVerse?.verse ?? null} onSelectVerse={selectVerse} />
         {selectedVerse && <CrossReferencePanel verse={selectedVerse} onNavigate={(b, c, v) => goTo(b, c, v)} />}
