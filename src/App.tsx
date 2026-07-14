@@ -5,6 +5,7 @@ import { AuthMenu } from "./components/AuthMenu";
 import { BookChapterNav } from "./components/BookChapterNav";
 import { ChapterReader } from "./components/ChapterReader";
 import { CrossReferencePanel } from "./components/CrossReferencePanel";
+import { MemorizePage } from "./components/MemorizePage";
 import { NotesPage } from "./components/NotesPage";
 import { useAuth } from "./lib/auth";
 import { getChapter } from "./lib/queries";
@@ -51,9 +52,14 @@ function ReaderPage() {
         </Link>
         <BookChapterNav book={book} chapter={chapterNum} onNavigate={(b, c) => goTo(b, c)} />
         {user && (
-          <Link to="/notes" className="auth-link-btn">
-            My Notes
-          </Link>
+          <>
+            <Link to="/memorize" className="auth-link-btn">
+              Memorize
+            </Link>
+            <Link to="/notes" className="auth-link-btn">
+              My Notes
+            </Link>
+          </>
         )}
         <AuthMenu />
       </header>
@@ -71,6 +77,7 @@ export default function App() {
       <Route path="/" element={<Navigate to="/read/John/1" replace />} />
       <Route path="/read/:book/:chapter" element={<ReaderPage />} />
       <Route path="/notes" element={<NotesPage />} />
+      <Route path="/memorize" element={<MemorizePage />} />
     </Routes>
   );
 }

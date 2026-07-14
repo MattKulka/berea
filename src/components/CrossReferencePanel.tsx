@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCrossReferences, getSemanticMatches } from "../lib/queries";
+import { MemorizeToggle } from "./MemorizeToggle";
 import { NotesSection } from "./NotesSection";
 import { RadialGraph } from "./RadialGraph";
 import { StudyQA } from "./StudyQA";
@@ -35,6 +36,7 @@ export function CrossReferencePanel({ verse, onNavigate }: Props) {
           {verse.book} {verse.chapter}:{verse.verse}
         </div>
         <p className="selected-verse-text">{verse.text}</p>
+        <MemorizeToggle verse={verse} />
       </div>
 
       {crossRefs && matches && (crossRefs.length > 0 || matches.length > 0) && (
