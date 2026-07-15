@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useAuth } from "../lib/auth";
 
 export function AuthMenu() {
-  const { user, loading, sendMagicLink, signOut } = useAuth();
+  const { user, loading, signIn, signUp, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState<"idle" | "submitting" | "confirm" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
   if (loading) return null;
@@ -23,13 +25,15 @@ export function AuthMenu() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setStatus("sending");
-    const { error } = await sendMagicLink(email);
-    if (error) {
-      setErrorMsg(error);
+    setStatus("submitting");
+    const result = mode === "signin" ? await signIn(email, password) : await signUp(email, password);
+    if (result.error) {
+      setErrorMsg(result.error);
       setStatus("error");
+    } else if (result.needsEmailConfirmation) {
+      setStatus("confirm");
     } else {
-      setStatus("sent");
+      setStatus("idle");
     }
   }
 
@@ -40,22 +44,34 @@ export function AuthMenu() {
           Sign in
         </button>
       )}
-      {open && status !== "sent" && (
+      {open && status !== "confirm" && (
         <form className="auth-form" onSubmit={handleSubmit}>
+          <input type="email" required placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input
-            type="email"
+            type="password"
             required
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            minLength={6}
+            placeholder="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit" disabled={status === "sending"}>
-            {status === "sending" ? "Sending…" : "Send magic link"}
+          <button type="submit" disabled={status === "submitting"}>
+            {status === "submitting" ? "…" : mode === "signin" ? "Sign in" : "Sign up"}
+          </button>
+          <button
+            type="button"
+            className="auth-mode-toggle"
+            onClick={() => {
+              setMode((m) => (m === "signin" ? "signup" : "signin"));
+              setStatus("idle");
+            }}
+          >
+            {mode === "signin" ? "Need an account?" : "Have an account?"}
           </button>
           {status === "error" && <span className="auth-error">{errorMsg}</span>}
         </form>
       )}
-      {status === "sent" && <span className="auth-sent">Check your email for a sign-in link.</span>}
+      {status === "confirm" && <span className="auth-sent">Check your email to confirm your account, then sign in.</span>}
     </div>
   );
 }

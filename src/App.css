@@ -126,7 +126,7 @@
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--ink);
-  width: 180px;
+  width: 140px;
 }
 
 .auth-form button {
@@ -143,6 +143,15 @@
 .auth-form button:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.auth-mode-toggle {
+  border: none !important;
+  background: none !important;
+  color: var(--ink-soft) !important;
+  padding: 0 !important;
+  font-size: 12px !important;
+  text-decoration: underline;
 }
 
 .auth-error {
@@ -286,46 +295,138 @@
   margin-bottom: 32px;
 }
 
-.deck-list-section {
-  margin-top: 40px;
+.deck-grid {
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.deck-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  padding: 6px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.deck-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.deck-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 14px 12px 8px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.deck-card-name {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.deck-card-count {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.deck-card-delete {
+  padding: 0 12px 10px !important;
+  font-size: 12px !important;
+}
+
+.deck-create-form {
+  display: flex;
+  gap: 8px;
+}
+
+.deck-create-form--page {
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.deck-create-form input {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.deck-modal-content {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 32px;
+  width: min(420px, 100%);
   text-align: left;
 }
 
-.deck-list-section h2 {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-soft);
-  margin: 0 0 12px;
+.deck-modal-content h2 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  margin: 0 0 4px;
 }
 
-.deck-list {
+.deck-modal-verse {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0 0 20px;
+}
+
+.deck-modal-list {
   list-style: none;
-  margin: 0;
+  margin: 0 0 20px;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  max-height: 240px;
+  overflow-y: auto;
 }
 
-.deck-item {
+.deck-checkbox-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 4px;
-  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  cursor: pointer;
   font-size: 14px;
 }
 
-.deck-item-ref {
-  font-weight: 600;
-  color: var(--accent);
+.deck-checkbox-row:hover {
+  background: var(--highlight);
 }
 
-.deck-item-due {
-  color: var(--ink-soft);
-  font-size: 13px;
-  margin-right: auto;
+.flashcard-nav {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.flashcard-tools {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
 }
 
 .flashcard {

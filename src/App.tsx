@@ -5,6 +5,7 @@ import { AppHeader } from "./components/AppHeader";
 import { BookChapterNav } from "./components/BookChapterNav";
 import { ChapterReader } from "./components/ChapterReader";
 import { CrossReferencePanel } from "./components/CrossReferencePanel";
+import { DeckStudyPage } from "./components/DeckStudyPage";
 import { MemorizePage } from "./components/MemorizePage";
 import { NotesPage } from "./components/NotesPage";
 import { useAuth } from "./lib/auth";
@@ -74,6 +75,7 @@ export default function App() {
       <Route path="/read/:book/:chapter" element={<ReaderPage />} />
       <Route path="/notes" element={<NotesPage />} />
       <Route path="/memorize" element={<MemorizePage />} />
+      <Route path="/memorize/:deckId" element={<DeckStudyPage />} />
     </Routes>
   );
 }

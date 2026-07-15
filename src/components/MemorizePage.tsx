@@ -1,61 +1,32 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppHeader } from "./AppHeader";
 import { useAuth } from "../lib/auth";
-import { deckStats, listDeck, listDueCards, removeFromDeck, reviewCard, type MemoryCard } from "../lib/memory";
-
-const GRADES: { label: string; quality: number; className: string }[] = [
-  { label: "Again", quality: 1, className: "grade-again" },
-  { label: "Hard", quality: 3, className: "grade-hard" },
-  { label: "Good", quality: 4, className: "grade-good" },
-  { label: "Easy", quality: 5, className: "grade-easy" },
-];
-
-function formatDue(dueAt: string): string {
-  const due = new Date(dueAt);
-  const now = new Date();
-  const days = Math.round((due.getTime() - now.getTime()) / 86_400_000);
-  if (days <= 0) return "due today";
-  if (days === 1) return "due tomorrow";
-  return `due in ${days} days`;
-}
+import { createDeck, deleteDeck, listDecks, type Deck } from "../lib/decks";
 
 export function MemorizePage() {
   const { user, loading } = useAuth();
-  const [queue, setQueue] = useState<MemoryCard[] | null>(null);
-  const [deck, setDeck] = useState<MemoryCard[] | null>(null);
-  const [stats, setStats] = useState<{ total: number; due: number } | null>(null);
-  const [revealed, setRevealed] = useState(false);
-
-  function refreshAll() {
-    listDueCards().then(setQueue);
-    listDeck().then(setDeck);
-    deckStats().then(setStats);
-  }
+  const navigate = useNavigate();
+  const [decks, setDecks] = useState<Deck[] | null>(null);
+  const [newDeckName, setNewDeckName] = useState("");
 
   useEffect(() => {
-    if (!user) return;
-    refreshAll();
+    if (user) listDecks().then(setDecks);
   }, [user]);
 
   if (loading) return null;
 
-  const current = queue?.[0] ?? null;
-
-  async function grade(quality: number) {
-    if (!current) return;
-    await reviewCard(current, quality);
-    setQueue((prev) => prev!.slice(1));
-    setRevealed(false);
-    listDeck().then(setDeck);
-    deckStats().then(setStats);
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newDeckName.trim() || !user) return;
+    const deck = await createDeck(user.id, newDeckName.trim());
+    setDecks((prev) => [...(prev ?? []), deck]);
+    setNewDeckName("");
   }
 
-  async function handleRemove(cardId: number) {
-    await removeFromDeck(cardId);
-    setDeck((prev) => prev!.filter((c) => c.id !== cardId));
-    setQueue((prev) => prev?.filter((c) => c.id !== cardId) ?? prev);
-    deckStats().then(setStats);
+  async function handleDelete(deckId: number) {
+    await deleteDeck(deckId);
+    setDecks((prev) => prev!.filter((d) => d.id !== deckId));
   }
 
   return (
@@ -67,61 +38,38 @@ export function MemorizePage() {
       </AppHeader>
       <main className="memorize-page">
         <h1 className="chapter-heading">Memorize</h1>
-        {!user && <p className="empty">Sign in to build a memorization deck.</p>}
+        {!user && <p className="empty">Sign in to build memorization decks.</p>}
 
-        {user && stats && (
-          <p className="memorize-stats">
-            {stats.due} due today · {stats.total} total in deck
-          </p>
+        {user && decks === null && <p className="loading">Loading…</p>}
+        {user && decks?.length === 0 && (
+          <p className="empty">No decks yet — create one below, then add verses from any passage.</p>
         )}
 
-        {user && queue === null && <p className="loading">Loading…</p>}
-
-        {user && queue !== null && !current && (
-          <p className="empty">Nothing due right now — add more verses from any passage, or come back later.</p>
-        )}
-
-        {current && (
-          <div className="flashcard">
-            <div className="flashcard-ref">
-              {current.verse.book} {current.verse.chapter}:{current.verse.verse}
-            </div>
-            {revealed ? (
-              <p className="flashcard-text">{current.verse.text}</p>
-            ) : (
-              <button className="note-btn-primary" onClick={() => setRevealed(true)}>
-                Reveal
-              </button>
-            )}
-            {revealed && (
-              <div className="flashcard-grades">
-                {GRADES.map((g) => (
-                  <button key={g.label} className={`grade-btn ${g.className}`} onClick={() => grade(g.quality)}>
-                    {g.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {user && deck !== null && deck.length > 0 && (
-          <section className="deck-list-section">
-            <h2>Your Deck</h2>
-            <ul className="deck-list">
-              {deck.map((card) => (
-                <li key={card.id} className="deck-item">
-                  <span className="deck-item-ref">
-                    {card.verse.book} {card.verse.chapter}:{card.verse.verse}
+        {user && decks && decks.length > 0 && (
+          <ul className="deck-grid">
+            {decks.map((deck) => (
+              <li key={deck.id} className="deck-card">
+                <button className="deck-card-body" onClick={() => navigate(`/memorize/${deck.id}`)}>
+                  <span className="deck-card-name">{deck.name}</span>
+                  <span className="deck-card-count">
+                    {deck.cardCount} verse{deck.cardCount === 1 ? "" : "s"}
                   </span>
-                  <span className="deck-item-due">{formatDue(card.dueAt)}</span>
-                  <button className="note-link-btn" onClick={() => handleRemove(card.id)}>
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
+                </button>
+                <button className="note-link-btn deck-card-delete" onClick={() => handleDelete(deck.id)}>
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {user && (
+          <form className="deck-create-form deck-create-form--page" onSubmit={handleCreate}>
+            <input placeholder="New deck name" value={newDeckName} onChange={(e) => setNewDeckName(e.target.value)} />
+            <button type="submit" className="note-btn-primary" disabled={!newDeckName.trim()}>
+              Create deck
+            </button>
+          </form>
         )}
       </main>
     </div>
