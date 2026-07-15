@@ -299,7 +299,7 @@
 .app-main {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-columns: minmax(0, 1fr) 440px;
   gap: 0;
   align-items: start;
 }
@@ -313,7 +313,7 @@
 .chapter-reader {
   padding: 48px clamp(20px, 6vw, 96px);
   max-width: 780px;
-  margin: 0 auto;
+  margin: 0 0 0 auto;
 }
 
 .chapter-heading {
