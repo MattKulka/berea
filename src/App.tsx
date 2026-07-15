@@ -1,4 +1,4 @@
-import { Link, Navigate, Route, Routes, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, Route, Routes, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./App.css";
 import { AppHeader } from "./components/AppHeader";
@@ -8,6 +8,7 @@ import { CrossReferencePanel } from "./components/CrossReferencePanel";
 import { DeckStudyPage } from "./components/DeckStudyPage";
 import { MemorizePage } from "./components/MemorizePage";
 import { NotesPage } from "./components/NotesPage";
+import { WelcomePage } from "./components/WelcomePage";
 import { useAuth } from "./lib/auth";
 import { getChapter } from "./lib/queries";
 import type { Verse } from "./lib/types";
@@ -71,7 +72,8 @@ function ReaderPage() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/read/John/1" replace />} />
+      <Route path="/" element={<WelcomePage />} />
+      <Route path="/login" element={<WelcomePage />} />
       <Route path="/read/:book/:chapter" element={<ReaderPage />} />
       <Route path="/notes" element={<NotesPage />} />
       <Route path="/memorize" element={<MemorizePage />} />
