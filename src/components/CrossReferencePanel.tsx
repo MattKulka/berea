@@ -11,6 +11,7 @@ import type { CrossReference, SemanticMatch, Verse } from "../lib/types";
 type Props = {
   verse: Verse;
   onNavigate: (book: string, chapter: number, verse: number) => void;
+  onClose?: () => void;
 };
 
 function refLabel(ref: CrossReference): string {
@@ -20,7 +21,7 @@ function refLabel(ref: CrossReference): string {
   return `${toStart.book} ${toStart.chapter}:${toStart.verse}-${toEnd.chapter}:${toEnd.verse}`;
 }
 
-export function CrossReferencePanel({ verse, onNavigate }: Props) {
+export function CrossReferencePanel({ verse, onNavigate, onClose }: Props) {
   const [crossRefs, setCrossRefs] = useState<CrossReference[] | null>(null);
   const [matches, setMatches] = useState<SemanticMatch[] | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -40,10 +41,14 @@ export function CrossReferencePanel({ verse, onNavigate }: Props) {
   return (
     <motion.aside
       className="cross-ref-panel"
-      initial={{ opacity: 0, x: 24 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
+      <button className="mobile-sheet-handle" onClick={onClose} aria-label="Close">
+        <span className="mobile-sheet-grip" />
+      </button>
+
       <div className="selected-verse-card">
         <div className="selected-verse-ref">
           {verse.book} {verse.chapter}:{verse.verse}

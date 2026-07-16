@@ -46,6 +46,10 @@ function ReaderPage() {
     setSearchParams({ v: String(verse) });
   }
 
+  function closeVerse() {
+    setSearchParams({});
+  }
+
   return (
     <div className="app-shell">
       <AppHeader>
@@ -63,7 +67,12 @@ function ReaderPage() {
       </AppHeader>
       <main className="app-main">
         <ChapterReader book={book} chapter={chapterNum} selectedVerse={selectedVerse?.verse ?? null} onSelectVerse={selectVerse} />
-        {selectedVerse && <CrossReferencePanel verse={selectedVerse} onNavigate={(b, c, v) => goTo(b, c, v)} />}
+        {selectedVerse && (
+          <>
+            <div className="mobile-sheet-backdrop" onClick={closeVerse} />
+            <CrossReferencePanel verse={selectedVerse} onNavigate={(b, c, v) => goTo(b, c, v)} onClose={closeVerse} />
+          </>
+        )}
       </main>
     </div>
   );
